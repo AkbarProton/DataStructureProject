@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PendingQueueTransaction.h"
+#include <chrono>
 
 //Pending Queue specifies queues when limit of transactions at a time are reached
 
@@ -15,18 +16,34 @@
 /*Add constructors and accessors/mutators too! */
 class PendingQueue {
 private:
+    //pointers to boundaries
     PendingQueueTransaction* front;
     PendingQueueTransaction* rear;
+
+    //queue for delayed transactions
+    PendingQueueTransaction* waitingFront;
+    PendingQueueTransaction* waitingRear;
+
+    //timer control
+    std::chrono::steady_clock::time_point lastAddedTime;
+    std::chrono::seconds delay;
 public:
 
     //Default Constructor
-    PendingQueue() : front(nullptr), rear(nullptr) {}
+    PendingQueue(int delaySeconds = 120)
+        : front(nullptr), 
+        rear(nullptr),
+        waitingFront(nullptr), 
+        waitingRear(nullptr),
+        delay(delaySeconds)
+    {
+        lastAddedTime = std::chrono::steady_clock::now() - delay;
+    }
 
     //Destructor
     ~PendingQueue() {
-        while (!isEmpty()) {
-            dequeuePendingQueueTransaction();
-        }
+        while (!isEmpty()) dequeuePendingQueueTransaction();
+        while (!waitingIsEmpty()) dequeueWaiting();
     }
 
     // --- Accessors ---
@@ -69,5 +86,50 @@ public:
     /*Check whether the transaction queue is empty*/
     bool isEmpty(void) const {
         return front == nullptr;
+    }
+
+    /* =================  Waiting Queue ====================== */
+
+    void enqueueWaiting(PendingQueueTransaction* node) {
+        node->setNext(nullptr);
+
+        if (waitingRear == nullptr) {
+            waitingFront = waitingRear = node;
+        }
+        else {
+            waitingRear->setNext(node);
+            waitingRear = node;
+        }
+    }
+
+    void dequeueWaiting() {
+        if (waitingIsEmpty()) return;
+
+        PendingQueueTransaction* temp = waitingFront;
+        waitingFront = waitingFront->getNext();
+
+        if (waitingFront == nullptr) waitingRear = nullptr;
+        delete temp;
+    }
+
+    bool waitingIsEmpty() const { return waitingFront == nullptr; }
+
+    // ===================================== //
+
+    void processWaiting() {
+        auto now = std::chrono::steady_clock::now();
+
+        while (!waitingIsEmpty() && now - lastAddedTime >= delay) {
+            PendingQueueTransaction* node = waitingFront;
+
+            //remove from waiting queue WITHOUT deleting
+            waitingFront = waitingFront->getNext();
+            
+            if (waitingFront == nullptr) waitingRear = nullptr;
+
+            node->setNext(nullptr);
+            enqueuePendingQueueTransaction(node);
+            lastAddedTime = std::chrono::steady_clock::now();
+        }
     }
 };
