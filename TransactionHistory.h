@@ -3,15 +3,9 @@
 #include <chrono>
 #include <ctime>
 #include <sstream>
-using namespace
 
-
-
-
-
-
-
-chrono;
+//namespaces
+using namespace std::chrono;
 using namespace std;
 
 class TransactionNode {
