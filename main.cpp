@@ -1,5 +1,8 @@
 #include "PendingQueue.h"
 #include "BankTree.h"
+#include <iostream>
+#include <memory>
+
 int main() {
     PendingQueue* bankTransactionQueue = new PendingQueue();
     BankTree* bankAccounts = new BankTree();
@@ -110,6 +113,7 @@ int main() {
     for (auto const& account : readyBankAccounts) {
         bankAccounts->insertAccount(account);
     }
+    
     cout << bankAccounts->getLastAccount()->getAccountNumber();
     bankAccounts->insertAccount(
         new BankAccount
