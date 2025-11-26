@@ -103,7 +103,7 @@ public:
 		cout << "Balance: " << this->balance << "$" << endl;
 
 		//5. Display Transaction History
-		cout << "Number of transactions: " << this->history->getTransactionCount() << endl;
+		cout << "Number of transactions: " << this->history->getTransactionCount() << endl << endl;
 	}
 
 
