@@ -13,6 +13,7 @@ int main() {
         new BankAccount("003", "Sarvar", 460000),
         new BankAccount("004", "Jaxongir", 33920),
         new BankAccount("005", "Abdulloh", 7040),
+        //reduced number of accounts for now
         new BankAccount("100", "User_100", 100000)
     };
 
@@ -29,7 +30,7 @@ int main() {
         try {
             nextNumber = std::stoi(lastAcc->getAccountNumber()) + 1;
         } catch (...) {
-            std::cerr << "Ошибка преобразования account number\n";
+            std::cerr << "Account Number Creation Error\n";
         }
         bankAccounts.insertAccount(
             new BankAccount(std::to_string(nextNumber), "Hi", 110000)
