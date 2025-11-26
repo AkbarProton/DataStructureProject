@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <chrono>
+
 using namespace std;
 //node in Pending Queue
 /*Add constructors and accessors/mutators too! */
@@ -10,15 +12,18 @@ private:
     string type;
     double amount;
     PendingQueueTransaction* next;
+    std::chrono::steady_clock::time_point timestamp;
 public:
     //Default Constructor
     PendingQueueTransaction()
         : AccountNumber(""), type(""), amount(0.0), next(nullptr) {
+        timestamp = std::chrono::steady_clock::now();
     }
 
     //Parametrized Constructor
     PendingQueueTransaction(string accountNumber, string type, double amount)
         : AccountNumber(accountNumber), type(type), amount(amount), next(nullptr) {
+        timestamp = std::chrono::steady_clock::now();
     }
 
     //accessors
