@@ -1,7 +1,11 @@
 #pragma once
 
 #include "PendingQueueTransaction.h"
+#include "BankTree.h"
 #include <chrono>
+#include <iostream>
+
+using namespace std;
 
 //Pending Queue specifies queues when limit of transactions at a time are reached
 
@@ -82,6 +86,20 @@ public:
         delete temp;
     }
 
+    void enqueueWithDelay(PendingQueueTransaction* node) {
+        auto now = std::chrono::steady_clock::now();
+
+        if (now - lastAddedTime >= delay) {
+            node->setNext(nullptr);
+            enqueuePendingQueueTransaction(node);
+            lastAddedTime = now;
+        }
+        else {
+            enqueueWaiting(node);
+        }
+    }
+
+
 
     /*Check whether the transaction queue is empty*/
     bool isEmpty(void) const {
@@ -130,6 +148,43 @@ public:
             node->setNext(nullptr);
             enqueuePendingQueueTransaction(node);
             lastAddedTime = std::chrono::steady_clock::now();
+        }
+    }
+
+    void processQueue(BankTree* bankAccounts) {
+        processWaiting();  // Move timed transactions from waiting to main queue
+
+        while (!isEmpty()) {
+            PendingQueueTransaction* trans = getFront();
+            BankAccount* acc = bankAccounts->findBankAccount(trans->getAccountNumber());
+
+            if (acc != nullptr) {
+                string transType = trans->getType();
+                double amt = trans->getAmount();
+
+                if (transType == "Deposit") {
+                    acc->depositMoney(amt);  // Updates balance and adds to history
+                } else if (transType == "Withdraw") {
+                    acc->withdrawMoney(amt);  // Checks balance, updates if possible, adds to history
+                } else {
+                    cout << "Invalid transaction type: " << transType << " for account " << trans->getAccountNumber() << endl;
+                }
+            } else {
+                cout << "Account not found for transaction: " << trans->getAccountNumber() << endl;
+            }
+
+            dequeuePendingQueueTransaction();
+        }
+    }
+
+    void addTransaction(string accNum, string type, double amount) {
+        PendingQueueTransaction* node = new PendingQueueTransaction(accNum, type, amount);
+        auto now = steady_clock::now();
+        if (now - lastAddedTime >= delay) {
+            enqueuePendingQueueTransaction(node);
+            lastAddedTime = now;
+        } else {
+            enqueueWaiting(node);
         }
     }
 };

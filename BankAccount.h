@@ -106,6 +106,10 @@ public:
 		cout << "Number of transactions: " << this->history->getTransactionCount() << endl << endl;
 	}
 
+	void displayTransactionHistory() const {
+		history->displayHistory();
+	}
+
 
 	void setAccountNumber(string accountNumber) {
 		this->accountNumber = accountNumber;
