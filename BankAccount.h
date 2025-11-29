@@ -56,6 +56,7 @@ public:
 
 	void depositMoney(double amount) {
 		this->balance += amount;
+		this->history->add(true, amount);  // true = deposit
 
 		/* Add this transaction (node) to transaction history linked list: Direct / Queued */
 
@@ -78,10 +79,11 @@ public:
 
 		/*Add a simple checker for balance ( if balance is 0 for example or if balance is not enough for withdrawal)*/
 		if (balance < amount) {
-			cout << "There is not enough money to withdraw! Balance is: " << this->balance << ", amount to withdraw: " << amount << endl;
+			cout << "Insufficient balance for withdrawal! Balance: " << this->balance << ", Requested: " << amount << endl;
 			return;
 		}
 		this->balance -= amount;
+		this->history->add(false, amount);  // false = withdraw
 
 
 		/* Add this transaction (node) to transaction history linked list: Direct / Queued */
@@ -103,7 +105,11 @@ public:
 		cout << "Balance: " << this->balance << "$" << endl;
 
 		//5. Display Transaction History
-		cout << "Number of transactions: " << this->history->getTransactionCount() << endl;
+		cout << "Number of transactions: " << this->history->getTransactionCount() << endl << endl;
+	}
+
+	void displayTransactionHistory() const {
+		history->displayHistory();
 	}
 
 

@@ -1,17 +1,12 @@
+#pragma once
 #include <iostream>
 #include <iomanip>
 #include <chrono>
 #include <ctime>
 #include <sstream>
-using namespace
 
-
-
-
-
-
-
-chrono;
+//namespaces
+using namespace chrono;
 using namespace std;
 
 class TransactionNode {
