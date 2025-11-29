@@ -109,7 +109,12 @@ public:
 	}
 
 	void displayTransactionHistory() const {
-		history->displayHistory();
+		if (history->getTransactionCount() == 0) {
+			cout << "Transaction History is empty" << endl;
+		}
+		else {
+			history->displayHistory();
+		}
 	}
 
 

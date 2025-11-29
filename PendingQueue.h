@@ -3,6 +3,7 @@
 #include "BankTree.h"
 #include <chrono>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 using namespace chrono;
@@ -155,29 +156,41 @@ public:
         processWaiting();  // Move timed transactions from waiting to main queue
 
         while (!isEmpty()) {
-            PendingQueueTransaction* trans = getFront();
-            BankAccount* acc = bankAccounts->findBankAccount(trans->getAccountNumber());
+            PendingQueueTransaction* transaction = getFront();
 
-            if (acc != nullptr) {
-                string transType = trans->getType();
-                double amt = trans->getAmount();
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
+            string current_status = "Processing [ " + transaction->getType() + " $" + std::to_string(transaction->getAmount())
+                + " ] for Account: " + transaction->getAccountNumber();
+
+            BankAccount* account = bankAccounts->findBankAccount(transaction->getAccountNumber());
+
+            if (account != nullptr) {
+                string transType = transaction->getType();
+                double amt = transaction->getAmount();
 
                 if (transType == "Deposit") {
-                    acc->depositMoney(amt);  // Updates balance and adds to history
+                    account->depositMoney(amt);
+                    // Print detailed success status before continuing
+                    cout << current_status << " ==> SUCCESS! (New Balance: " << account->getAccountBalance() << ")" << endl;
                 }
                 else if (transType == "Withdraw") {
-                    acc->withdrawMoney(amt);  // Checks balance, updates if possible, adds to history
+                    // Assuming withdrawMoney prints its own success/fail message, append a newline here
+                    account->withdrawMoney(amt);
+                    cout << current_status << " ==> Finished withdraw attempt." << endl;
                 }
                 else {
-                    cout << "Invalid transaction type: " << transType << " for account " << trans->getAccountNumber() << endl;
+                    cout << current_status << " ==> ERROR: Invalid transaction type: " << transType << endl;
                 }
             }
             else {
-                cout << "Account not found for transaction: " << trans->getAccountNumber() << endl;
+                // Print detailed error status
+                cout << current_status << " ==> ERROR: Account not found." << endl;
             }
 
             dequeuePendingQueueTransaction();
         }
+        // ... rest of the function ...
     }
 
     void addTransaction(string accNum, string type, double amount) {

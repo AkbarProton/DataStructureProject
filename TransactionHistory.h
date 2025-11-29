@@ -6,12 +6,8 @@
 #include <sstream>
 
 //namespaces
-<<<<<< < HEAD
-    using namespace chrono;
-====== =
-using namespace std::chrono;
->>>>>> > 8cfc69905fd6c255a71804ec20c13e70c3a174c6
 using namespace std;
+using namespace std::chrono;
 
 class TransactionNode {
     bool type;
