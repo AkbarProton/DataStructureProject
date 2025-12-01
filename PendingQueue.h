@@ -44,7 +44,12 @@ public:
     {
         lastAddedTime = std::chrono::steady_clock::now() - delay;
     }
-
+    //Show the queue elements at a time for delayed transactions
+    void displayQueueFromFront() {
+        cout << "Transaction type:  "+ this->getFront()->getType() << endl;
+        cout << "Transaction amount: " + to_string(this->getFront()->getAmount()) << endl;
+        cout << "Transaction account number associated: " + this->getFront()->getAccountNumber() << endl;
+    }
     //Destructor
     ~PendingQueue() {
         while (!isEmpty()) dequeuePendingQueueTransaction();
@@ -158,13 +163,14 @@ public:
         while (!isEmpty()) {
             PendingQueueTransaction* transaction = getFront();
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
             string current_status = "Processing [ " + transaction->getType() + " $" + std::to_string(transaction->getAmount())
                 + " ] for Account: " + transaction->getAccountNumber();
 
             BankAccount* account = bankAccounts->findBankAccount(transaction->getAccountNumber());
 
+            displayQueueFromFront(); //Displaying queue front befure deleting from queue
             if (account != nullptr) {
                 string transType = transaction->getType();
                 double amt = transaction->getAmount();
@@ -187,7 +193,6 @@ public:
                 // Print detailed error status
                 cout << current_status << " ==> ERROR: Account not found." << endl;
             }
-
             dequeuePendingQueueTransaction();
         }
         // ... rest of the function ...
