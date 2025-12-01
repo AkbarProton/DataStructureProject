@@ -10,7 +10,6 @@ int main() {
 	//Creating a bankTree of bank Accounts 
 	BankTree* bankAccounts = new BankTree();
 
-
 	//For menu flag value
 	bool isProgramActive = true;
 	PendingQueue* pendingTransactions = new PendingQueue(5);
