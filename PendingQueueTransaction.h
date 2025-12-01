@@ -38,9 +38,9 @@ public:
     }
 
     //mutators
-    void setAccountNumber(string& num) { this->AccountNumber = num; }
-    void setType(string& type) { this->type = type; }
-    void setAmount(double amount) { this->amount = amount; }
+    void setAccountNumber(string& num)  { this->AccountNumber = num; }
+    void setType(string& type)          { this->type = type; }
+    void setAmount(double amount)       { this->amount = amount; }
     void setNext(PendingQueueTransaction* nxt) { next = nxt; }
 
 };
