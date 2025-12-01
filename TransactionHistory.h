@@ -39,7 +39,7 @@ public:
         cout << " | " << getTime() << " | ";
         if (getType())cout << " Deposited ";
         else          cout << " Withdrawn ";
-        cout << getAmount() << " sums" << endl;
+        cout << getAmount() << " $ " << endl;
     }
 };
 
