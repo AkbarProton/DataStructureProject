@@ -97,6 +97,10 @@ public:
 
 	}
 
+	void applyInterest(double amount) {
+		
+	}
+
 
 	/* Add method to show info of bank account: AccountNumber, Name, balance and length of transaction history linked list*/
 	void displayInfo() {

@@ -30,8 +30,8 @@ private:
     PendingQueueTransaction* waitingRear;
 
     //timer control
-    std::chrono::steady_clock::time_point lastAddedTime;
-    std::chrono::seconds delay;
+    steady_clock::time_point lastAddedTime;
+    seconds delay;
 public:
 
     //Default Constructor
@@ -42,30 +42,25 @@ public:
         waitingRear(nullptr),
         delay(delaySeconds)
     {
-        lastAddedTime = std::chrono::steady_clock::now() - delay;
+        lastAddedTime = steady_clock::now() - delay;
     }
-    //Show the queue elements at a time for delayed transactions
-    void displayQueueFromFront() {
-        cout << "Transaction type:  "+ this->getFront()->getType() << endl;
-        cout << "Transaction amount: " + to_string(this->getFront()->getAmount()) << endl;
-        cout << "Transaction account number associated: " + this->getFront()->getAccountNumber() << endl;
-    }
+
     //Destructor
     ~PendingQueue() {
         while (!isEmpty()) dequeuePendingQueueTransaction();
         while (!waitingIsEmpty()) dequeueWaiting();
     }
 
-    // --- Accessors ---
+    //Accessors
     PendingQueueTransaction* getFront() const { return front; }
     PendingQueueTransaction* getRear() const { return rear; }
 
-    // --- Mutators (          ) ---
+    //Mutators
     void setFront(PendingQueueTransaction* f) { front = f; }
     void setRear(PendingQueueTransaction* r) { rear = r; }
 
 
-    /* Enqueue to add the transaction node to queue to rear */
+    //Enqueue to add the transaction node to queue to rear
     void enqueuePendingQueueTransaction(PendingQueueTransaction* node) {
         if (rear == nullptr) {
             setFront(node);
@@ -78,7 +73,7 @@ public:
     }
 
 
-    /* Dequeue to remove the transaction node to queue from front */
+    //Dequeue to remove the transaction node to queue from front
     void dequeuePendingQueueTransaction() {
         if (isEmpty()) return;
 
@@ -93,7 +88,7 @@ public:
     }
 
     void enqueueWithDelay(PendingQueueTransaction* node) {
-        auto now = std::chrono::steady_clock::now();
+        auto now = steady_clock::now();
 
         if (now - lastAddedTime >= delay) {
             node->setNext(nullptr);
@@ -141,7 +136,7 @@ public:
     // ===================================== //
 
     void processWaiting() {
-        auto now = std::chrono::steady_clock::now();
+        auto now = steady_clock::now();
 
         while (!waitingIsEmpty() && now - lastAddedTime >= delay) {
             PendingQueueTransaction* node = waitingFront;
@@ -158,30 +153,27 @@ public:
     }
 
     void processQueue(BankTree* bankAccounts) {
-        processWaiting();  // Move timed transactions from waiting to main queue
+        processWaiting();
 
         while (!isEmpty()) {
             PendingQueueTransaction* transaction = getFront();
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+            this_thread::sleep_for(milliseconds(200));
 
             string current_status = "Processing [ " + transaction->getType() + " $" + std::to_string(transaction->getAmount())
                 + " ] for Account: " + transaction->getAccountNumber();
 
             BankAccount* account = bankAccounts->findBankAccount(transaction->getAccountNumber());
 
-            displayQueueFromFront(); //Displaying queue front befure deleting from queue
             if (account != nullptr) {
                 string transType = transaction->getType();
                 double amt = transaction->getAmount();
 
                 if (transType == "Deposit") {
                     account->depositMoney(amt);
-                    // Print detailed success status before continuing
                     cout << current_status << " ==> SUCCESS! (New Balance: " << account->getAccountBalance() << ")" << endl;
                 }
                 else if (transType == "Withdraw") {
-                    // Assuming withdrawMoney prints its own success/fail message, append a newline here
                     account->withdrawMoney(amt);
                     cout << current_status << " ==> Finished withdraw attempt." << endl;
                 }
@@ -190,12 +182,12 @@ public:
                 }
             }
             else {
-                // Print detailed error status
+                //print detailed error status
                 cout << current_status << " ==> ERROR: Account not found." << endl;
             }
+
             dequeuePendingQueueTransaction();
         }
-        // ... rest of the function ...
     }
 
     void addTransaction(string accNum, string type, double amount) {

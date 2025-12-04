@@ -6,7 +6,6 @@
 using namespace std;
 
 int main() {
-
 	//Creating a bankTree of bank Accounts 
 	BankTree* bankAccounts = new BankTree();
 
@@ -119,7 +118,7 @@ int main() {
 			cin >> depositChoice;
 			cout << endl;
 			if (depositChoice == 1) {
-				// Direct Deposit: Immediate update to account and history
+				//Direct Deposit: Immediate update to account and history
 				thisUser->depositMoney(amountToDeposit);
 				cout << "Operation of depositing is done succesfully (Direct). New Balance: " << thisUser->getAccountBalance();
 			}
